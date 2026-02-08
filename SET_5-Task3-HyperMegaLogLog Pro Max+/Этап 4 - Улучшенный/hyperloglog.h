@@ -20,13 +20,15 @@ private:
         return 0.7213 / (1.0 + 1.079 / m);
     }
 
-    uint8_t rho(uint32_t hash, uint8_t b) const {
+    uint8_t rho(uint32_t w) const {
+        if (w == 0) return 32 - b + 1;
+        
         uint8_t leading_zeros = 0;
-        uint32_t mask = 1u << (32 - b - 1);
-        for (int i = 0; i < (32 - b); ++i) {
-            if (hash & mask) break;
+        for (int i = 31 - b; i >= 0; --i) {
+            if (w & (1u << i)) {
+                break;
+            }
             leading_zeros++;
-            mask >>= 1;
         }
         return leading_zeros + 1;
     }
@@ -39,12 +41,15 @@ public:
 
     void add(uint32_t hash) {
         uint32_t j = hash >> (32 - b);
-        uint32_t w = (hash << b) | (1u << (b - 1));
-        M[j] = std::max(M[j], rho(w, b));
+        
+        uint32_t w = hash << b;
+        
+        M[j] = std::max(M[j], rho(w));
     }
 
     double estimate() const {
         double raw_estimate = alpha_m * m * m / getSum();
+        
         if (raw_estimate <= 2.5 * m) {
             uint32_t zeros = 0;
             for (uint32_t i = 0; i < m; ++i) {

@@ -7,14 +7,14 @@
 
 class RandomStreamGen {
 private:
-    std::mt19937_64 rng;
-    std::uniform_int_distribution<int> length_dist;
-    std::uniform_int_distribution<int> char_dist;
-    
     const std::string charset = 
         "abcdefghijklmnopqrstuvwxyz"
         "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
         "0123456789-";
+    
+    std::mt19937_64 rng;
+    std::uniform_int_distribution<int> length_dist;
+    std::uniform_int_distribution<int> char_dist;
 
 public:
     RandomStreamGen(uint64_t seed = std::random_device{}()) 
